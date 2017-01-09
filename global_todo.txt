@@ -1,0 +1,13 @@
+# TODO: action cards
+# TODO: take only one card
+# TODO: take four with color, put on black
+# TODO: skip turn bug
+# TODO: skip turn bug - ai will put card on it
+# TODO: black list comparator bug - set color, no set color
+# TODO: round start conditions
+# TODO: event system check
+
+# TODO: event processor refactoring
+# TODO: ai player refactoring and tests
+# TODO: python client
+# TODO: thrift implementation
