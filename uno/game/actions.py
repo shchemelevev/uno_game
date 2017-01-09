@@ -99,16 +99,13 @@ class PutCardAction(TurnAction):
         )
 
 
-# TODO: merge in PutCardAction
 class PutSameColorCardAction(PutCardAction):
 
     @classmethod
     def check_main_condition(cls, card, active_card, player_cards, taken_card):
-        print(active_card, card)
         return active_card.color == card.color
 
 
-# TODO: merge in PutCardAction
 class PutSameNumberCardAction(PutCardAction):
 
     @classmethod
@@ -116,7 +113,6 @@ class PutSameNumberCardAction(PutCardAction):
         return card.action is None and card.number == active_card.number
 
 
-# TODO: merge in PutCardAction
 class PutRequiredColorCardAction(PutCardAction):
 
     @classmethod
@@ -124,17 +120,14 @@ class PutRequiredColorCardAction(PutCardAction):
         return card.color == active_card.required_color
 
 
-# TODO: merge in PutCardAction
 class PutSetColorCardAction(PutCardAction):
 
     @classmethod
     def check_main_condition(cls, card, active_card, player_cards, taken_card):
-        print('-----'*100)
-        print(card, active_card, card.action == CardAction.SET_COLOR)
+        # TODO: check required color setted
         return card.action == CardAction.SET_COLOR
 
 
-# TODO: merge in PutCardAction
 class PutSkipCardAction(PutCardAction):
 
     @classmethod
@@ -182,6 +175,7 @@ class PutTakeFourCardAction(PutCardAction):
     def check_main_condition(cls, card, active_card, player_cards, taken_card):
         if card.action != CardAction.TAKE_FOUR_AND_SET_COLOR:
             return False
+        # TODO: check required color setted
         for item in player_cards:
             if item.color != Color.BLACK and (
                 item.color == active_card.color

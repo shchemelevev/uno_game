@@ -7,7 +7,6 @@ import logging
 
 from uno.game.deck import Card
 from uno.game.ai import AILogic
-from uno.game.uno_round import can_put_card
 from uno.server.event_manager import event_manager
 
 logger = logging.getLogger(__name__)

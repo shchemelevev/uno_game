@@ -23,26 +23,6 @@ class ActionNotAllowedError(Exception):
     pass
 
 
-def can_put_card(player_cards, card, active_card):
-    if card.color == 'black' and card.action == 'take_four':
-        for item in player_cards:
-            if item.color != 'black' and item.can_put_on(active_card):
-                raise IncorrectCardError(
-                    'You have to put {} first'.format(item)
-                )
-
-    if active_card == 'set_color':
-        if card.color != active_card:
-            raise IncorrectCardError(
-                'You have to put {} color card'.format(card.action_param)
-            )
-
-    if not card.can_put_on(active_card):
-        raise IncorrectCardError(
-            "you can't put {0} on {1}".format(card, active_card)
-        )
-
-
 class NotYourTurnException(Exception):
     pass
 
