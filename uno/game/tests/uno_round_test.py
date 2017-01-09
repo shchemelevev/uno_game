@@ -46,7 +46,7 @@ class TestRound(unittest.TestCase):
             self.assertEqual(len(uno_round.player_list[1].cards), 7)
 
         self.assertTrue(uno_round.deck.active_card)
-        self.assertEqual(len(uno_round.actions_list), 8)
+        self.assertEqual(len(uno_round.actions_list), 9)
         for item in uno_round.actions_list:
             self.assertTrue(
                 item in allowed_actions_for_card(Card(color=Color.RED, number=1))
@@ -86,8 +86,8 @@ class TestRound(unittest.TestCase):
     def test_win_conditions(self):
         self._get_all_events()
         uno_round = UnoRound()
-        player1 = uno_round.add_player('1')
-        player2 = uno_round.add_player('2')
+        player1 = uno_round.add_player('1', 'human')
+        player2 = uno_round.add_player('2', 'human')
         uno_round.start_round()
         uno_round.deck._used_cards = [Card(color=Color.RED, number=1)]
         uno_round.current_player_index = 0
@@ -109,12 +109,15 @@ class TestRound(unittest.TestCase):
                 Command.PUT, player2.cards[0] # yellow,2
             )
         )
+        events = self._get_all_events()
         uno_round.process_input(player1,
             uno_service.UnoService.execute_command.request(
                 Command.PUT, player1.cards[0]  # yellow, 5
             )
         )
         events = self._get_all_events()
+        for ev in events:
+            print(ev)
         self.assertTrue([i for i in events if i['code'] == NotificationType.ROUND_FINISHED])
 
     def test_set_next_player(self):

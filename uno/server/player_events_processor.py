@@ -30,8 +30,9 @@ class OnlinePlayers(object):
         self.uid_player = dict()
 
     def get_protocol_id(self, protocol):
-        socket = protocol.transport.get_extra_info('socket')
-        return socket.fileno()
+        return id(protocol)
+        # socket = protocol.transport.get_extra_info('socket')
+        # return socket.fileno()
 
     def add_player(self, player, protocol):
         protocol_id = self.get_protocol_id(protocol)
@@ -57,29 +58,39 @@ class OnlinePlayers(object):
     async def process_event(self, event):
         if event['channel'] == 'data_received':
             request = event.get('data', '')
-            if request.command == uno_service.Command.LOGIN:
-                if self.get_player_by_protocol(event['protocol']) is None:
-                    online_user = HumanUser(request.username, event['protocol'])
-                    self.add_player(online_user, event['protocol'])
-            if request.command == uno_service.Command.START:
-                event_manager.add_event({
-                    'channel': 'game_queue',
-                    'code': 'game_start_request',
-                    'player_uid': self.get_player_by_protocol(event['protocol']),
-                })
-            if request.command in (
-                uno_service.Command.PUT,
-                uno_service.Command.TAKE,
-                uno_service.Command.SKIP,
-                uno_service.Command.TAKE_TWO_AND_SKIP,
-                uno_service.Command.TAKE_FOUR_AND_SKIP,
-                uno_service.Command.LIST_CARDS,
-            ):
+            if request:
+                if request.command == uno_service.Command.LOGIN:
+                    if self.get_player_by_protocol(event['protocol']) is None:
+                        online_user = HumanUser(request.username, event['protocol'])
+                        self.add_player(online_user, event['protocol'])
+                if request.command == uno_service.Command.START:
+                    event_manager.add_event({
+                        'channel': 'game_queue',
+                        'code': 'game_start_request',
+                        'player_uid': self.get_player_by_protocol(event['protocol']),
+                    })
+                if request.command in (
+                    uno_service.Command.PUT,
+                    uno_service.Command.TAKE,
+                    uno_service.Command.SKIP,
+                    uno_service.Command.TAKE_TWO_AND_SKIP,
+                    uno_service.Command.TAKE_FOUR_AND_SKIP,
+                    uno_service.Command.LIST_CARDS,
+                ):
+                    event_manager.add_event({
+                        'channel': 'game_command',
+                        'player_uid': self.get_player_by_protocol(event['protocol']),
+                        'command': event['data']
+                    })
+            if event['code'] == 'user_disconnected':
+                player = self.get_player_by_protocol(event['protocol']),
+                self.remove_player(player)
                 event_manager.add_event({
                     'channel': 'game_command',
                     'player_uid': self.get_player_by_protocol(event['protocol']),
-                    'command': event['data']
+                    'command': uno_service.Command.DISCONNECT
                 })
+
         if event['channel'] == 'user_notification':
             protocol = self.get_protocol_by_player_uid(event['user_uid'])
             player = self.get_player_by_uid(event['user_uid'])

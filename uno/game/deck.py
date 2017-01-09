@@ -31,26 +31,26 @@ class Deck(object):
     def _generate_deck(self):
         self._cards = list()
         # number cards
-        for color in [Color.RED, Color.BLUE]:  #simple_colors:
+        for color in simple_colors:
             self._cards.append(Card(number=0, color=color))
             for number in range(1, 10):
                 for i in range(2):
                     self._cards.append(Card(color=color, number=number))
 
         # action cards
-        # for color in [Color.RED,Color.RED,Color.RED,Color.RED]:  # simple_colors:
-        #     for number in range(20):
-        #         self._cards.append(Card(color=color, action=CardAction.SKIP))
-        #         self._cards.append(
-        #             Card(color=color, action=CardAction.TAKE_TWO)
-        #         )
-        #         self._cards.append(Card(color=color, action=CardAction.REVERSE))
+        for color in simple_colors:
+            for number in range(2):
+                self._cards.append(Card(color=color, action=CardAction.SKIP))
+                self._cards.append(
+                    Card(color=color, action=CardAction.TAKE_TWO)
+                )
+                self._cards.append(Card(color=color, action=CardAction.REVERSE))
 
-        ## black cards
-        for i in range(40):
-            # self._cards.append(
-            #     Card(color=Color.BLACK, action=CardAction.SET_COLOR)
-            # )
+        # black cards
+        for i in range(4):
+            self._cards.append(
+                Card(color=Color.BLACK, action=CardAction.SET_COLOR)
+            )
             self._cards.append(
                 Card(
                     color=Color.BLACK,

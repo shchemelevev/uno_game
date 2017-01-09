@@ -32,7 +32,8 @@ enum Command {
     LOGIN = 6,
     LOGOUT = 7,
     START = 8,
-    LIST_CARDS = 9
+    LIST_CARDS = 9,
+    DISCONNECT = 10
 }
 
 enum NotificationType {
@@ -49,6 +50,7 @@ enum NotificationType {
     PLAYER_TOOK_CARDS = 11,
     YOUR_CARDS = 12,
     ROUND_FINISHED = 13,
+    PLAYER_DISCONNECTED = 14,
 }
 
 struct Notification {

@@ -37,7 +37,7 @@ class GameQueue(object):
         if len(self.players_list) == 10:
             return True
 
-        if len(self.players_list) >= 1 and self._get_max_time_delta(datetime.now()) > 3:
+        if len(self.players_list) >= 1 and self._get_max_time_delta(datetime.now()) > 10:
             return True
 
         if self._get_max_time_delta(datetime.now()) > 20:
@@ -51,7 +51,7 @@ class GameQueue(object):
         event_manager.subscribe('game_command', uno_round)
         for data in self.players_list:
             player_uid, time = data
-            uno_round.add_player(player_uid)
+            uno_round.add_player(player_uid, 'human')
 
         if len(self.players_list) < 2:
             for item in range(1):

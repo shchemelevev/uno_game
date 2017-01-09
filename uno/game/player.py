@@ -21,7 +21,11 @@ class Player(object):
 
     def remove_card(self, card):
         for item in self.cards:
-            if item == card:
+            if (
+                item.color == card.color
+                and item.number == card.number
+                and item.action == card.action
+            ):
                 self.cards.remove(item)
                 break
 

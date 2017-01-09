@@ -37,6 +37,13 @@ class UnoServerProtocol(asyncio.Protocol):
         )
         self._ready.set()
 
+    def connection_lost(self, exc):
+        event_manager.add_event({
+            'channel': 'data_received',
+            'code': 'user_disconnected',
+            'protocol': self
+        })
+
     @asyncio.coroutine
     def _send_messages(self):
         """ Send messages to the server as they become available. """

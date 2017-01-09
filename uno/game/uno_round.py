@@ -41,11 +41,13 @@ class UnoRound(object):
     actions_list = None
     player_by_uid = None
     taken_card = None
+    human_players = None
 
     def __init__(self, deck=None):
         self.player_list = list()
         self.uid = str(uuid.uuid4())
         self.player_by_uid = dict()
+        self.human_players = list()
         if deck is None:
             self.deck = Deck()
         else:
@@ -54,7 +56,9 @@ class UnoRound(object):
     def get_player(self, player_uid):
         return self.player_by_uid[player_uid]
 
-    def add_player(self, player_uid):
+    def add_player(self, player_uid, player_type=None):
+        if player_type == 'human':
+            self.human_players.append(player_uid)
         if len(self.player_list) < MAX_PLAYERS:
             player = Player(player_uid)
             self.player_list.append(player)
@@ -67,7 +71,7 @@ class UnoRound(object):
         self.current_player_index = random.randint(0, len(self.player_list)-1)
 
     def deal_cards(self, deck, player_list):
-        CARDS_TO_DEAL = 3
+        CARDS_TO_DEAL = 7
         for item in range(CARDS_TO_DEAL):
             for player in player_list:
                 card = deck.get_card()
@@ -123,6 +127,23 @@ class UnoRound(object):
         else:
             self.direction = RIGHT
 
+    def remove_player(self, player_uid):
+        player = self.player_by_uid[player_uid]
+        current_player = self.current_player
+        if player_uid == self.current_player.uid:
+            if len(self.human_players) > 0:
+                self.set_next_player()
+                self.current_player.notify_user(
+                    code=NotificationType.YOUR_TURN,
+                    allowed_actions=self.get_allowed_actions()
+                )
+        self.current_player_index = self.player_list.index(current_player)
+        self.human_players.remove(player_uid)
+        self.player_by_uid.pop(player_uid)
+        self.player_list.remove(player)
+        self.notify_all(code=NotificationType.PLAYER_DISCONNECTED)
+        self.check_for_win()
+
     def set_next_player(self):
         if self.direction == 1 and self.current_player_index + 1 >= len(self.player_list):
             self.current_player_index = 0
@@ -138,10 +159,7 @@ class UnoRound(object):
         # TODO: check player has card
 
         action_processed = False
-        print(player)
-        print(command_request)
         for action in self.actions_list:
-            print(action)
             if action.check_condition(command_request, self):
                 action.update_round(command_request, self)
                 action_processed = True
@@ -155,6 +173,9 @@ class UnoRound(object):
     async def process_event(self, event):
         if event['channel'] == 'game_command':
             if event['player_uid'] in self.player_by_uid.keys():
+                if event.get('command') == Command.DISCONNECT:
+                    self.remove_player(event['player_uid'])
+                    return True
                 try:
                     self.process_input(
                         self.get_player(event['player_uid']), event['command']
@@ -176,8 +197,20 @@ class UnoRound(object):
                         )
                     )
 
-
     def check_for_win(self):
+        if len(self.human_players) == 0:
+            event_manager.add_event(
+                {'channel': 'game_queue', 'code': 'finish_game', 'uno_round': self}
+            )
+            return True
+        if len(self.human_players) == 1 and len(self.player_list) == 1:
+            self.notify_all(
+                code=NotificationType.ROUND_FINISHED, winner=self.player_list[0].uid,
+                uno_round=self
+            )
+            event_manager.add_event(
+                {'channel': 'game_queue', 'code': 'finish_game', 'uno_round': self}
+            )
         for player in self.player_list:
             if not player.cards:
                 self.notify_all(
@@ -187,4 +220,5 @@ class UnoRound(object):
                 event_manager.add_event(
                     {'channel': 'game_queue', 'code': 'finish_game', 'uno_round': self}
                 )
-                break
+                return True
+        return False

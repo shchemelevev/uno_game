@@ -61,7 +61,6 @@ class PutCardAction(TurnAction):
             return False
         if not cls.check_input(command_request):
             return False
-        print('input ok')
         return cls.check_main_condition(
             command_request.card,
             uno_round.deck.active_card,
@@ -285,7 +284,7 @@ class TakeFourAndSkipAction(TakeAndSkipAction):
 def allowed_actions_for_card(card):
     if card.action is None:
         return [
-            ListCardsAction,
+            ListCardsAction, PutRequiredColorCardAction,
             PutSetColorCardAction, PutSkipCardAction, PutTakeTwoCardAction,
             PutTakeFourCardAction, TakeAction,
             PutSameNumberCardAction, PutSameColorCardAction,
