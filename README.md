@@ -4,4 +4,6 @@
 
 [Архитектура](docs/architecture.md)
 
+[Установка](docs/install.md)
+
 [Заметки](docs/notes.md)
