@@ -6,7 +6,7 @@ from datetime import datetime
 from uno.server.event_manager import event_manager
 from uno.game.uno_round import UnoRound
 from uno.server.user import AIUser
-from uno.server.online_players import online_players
+from uno.server.online_users import online_users
 
 from uno.protocol.service import uno_service
 NotificationType = uno_service.NotificationType
@@ -63,7 +63,7 @@ class GameQueue(object):
         self.players_list = list()
         logger.debug('game started')
 
-    def finish_game(self, event):
+    async def finish_game(self, event):
         logger.debug('finishing game')
         uno_round = event['uno_round']
         event_manager.unsubscribe('game_command', uno_round)
@@ -86,7 +86,7 @@ class GameQueue(object):
             logger.debug('player %s added to queue', event['player_uid'])
 
         if event['code'] == 'finish_game':
-            self.finish_game(event)
+            await self.finish_game(event)
 
 game_queue = GameQueue()
 event_manager.subscribe('game_queue', game_queue)

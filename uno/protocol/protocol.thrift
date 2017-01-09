@@ -51,6 +51,7 @@ enum NotificationType {
     YOUR_CARDS = 12,
     ROUND_FINISHED = 13,
     PLAYER_DISCONNECTED = 14,
+    YOUR_WINRATE = 15,
 }
 
 struct Notification {

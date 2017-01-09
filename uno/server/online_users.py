@@ -5,6 +5,7 @@ import logging
 
 from uno.server.event_manager import event_manager
 from uno.server.user import HumanUser
+from uno.server.score_storage import get_user_score, record_user_score
 
 from uno.protocol.service import uno_service
 NotificationType = uno_service.NotificationType
@@ -14,9 +15,7 @@ Card = uno_service.Card
 logger = logging.getLogger(__name__)
 
 
-class OnlinePlayers(object):
-    uid = 'online_players_list'
-
+class OnlineUsers(object):
     uid_protocol = dict()
     protocol_uid = dict()
     uid_player = dict()
@@ -62,8 +61,18 @@ class OnlinePlayers(object):
             if request:
                 if request.command == uno_service.Command.LOGIN:
                     if self.get_player_by_protocol(event['protocol']) is None:
+                        protocol = event['protocol']
                         online_user = HumanUser(request.username, event['protocol'])
                         self.add_player(online_user, event['protocol'])
+                        winrate = await get_user_score(request.username)
+                        notification = uno_service.Notification(
+                            NotificationType.YOUR_WINRATE,
+                            message=str(winrate)
+                        )
+                        response = uno_service.UnoService.get_notification.response(
+                            success=notification
+                        )
+                        await protocol.send_message(response)
                 if request.command == uno_service.Command.START:
                     event_manager.add_event({
                         'channel': 'game_queue',
@@ -119,6 +128,10 @@ class OnlinePlayers(object):
                     message = ';'.join(Card.simple_str(card) for card in cards)
                 if event['code'] == NotificationType.ROUND_FINISHED:
                     message = 'winner {}'.format(event['winner'])
+                    print(event, player.uid)
+                    user_result = event['winner'] == player.uid
+                    await record_user_score(player.name, user_result)
+
 
                 notification = uno_service.Notification(
                     notification_type,
@@ -132,6 +145,6 @@ class OnlinePlayers(object):
             await protocol.send_message(response)
 
 
-online_players = OnlinePlayers()
-event_manager.subscribe('data_received', online_players)
-event_manager.subscribe('user_notification', online_players)
+online_users = OnlineUsers()
+event_manager.subscribe('data_received', online_users)
+event_manager.subscribe('user_notification', online_users)
