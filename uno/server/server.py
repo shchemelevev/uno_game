@@ -7,7 +7,7 @@ import uvloop
 from uno.server.event_manager import event_manager
 from uno.server.game_queue import game_queue
 from uno.server.login_manager import login_manager
-from uno.server.player_events_processor import online_players
+from uno.server.online_players import online_players
 
 from uno.protocol.service import uno_service
 

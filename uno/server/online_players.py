@@ -13,9 +13,6 @@ Card = uno_service.Card
 
 logger = logging.getLogger(__name__)
 
-def _wr(tr, dic):
-    tr.write((json.dumps(dic)+'\n').encode())
-
 
 class OnlinePlayers(object):
     uid = 'online_players_list'
@@ -40,9 +37,12 @@ class OnlinePlayers(object):
         self.uid_protocol[player.uid] = protocol
         self.uid_player[player.uid] = player
 
-    def remove_player(self, player):
-        # self.ui.pop(protocol)
-        pass
+    def remove_player(self, player, protocol):
+        protocol_id = self.get_protocol_id(protocol)
+        # TODO: fix bug
+        # self.protocol_uid.pop(protocol_id)
+        # self.uid_protocol.pop(player.uid)
+        # self.uid_player.pop(player.uid)
 
     def get_player_by_protocol(self, protocol):
         return self.protocol_uid.get(
@@ -56,6 +56,7 @@ class OnlinePlayers(object):
         return self.uid_player[player_uid]
 
     async def process_event(self, event):
+        # make processor
         if event['channel'] == 'data_received':
             request = event.get('data', '')
             if request:
@@ -84,7 +85,7 @@ class OnlinePlayers(object):
                     })
             if event['code'] == 'user_disconnected':
                 player = self.get_player_by_protocol(event['protocol']),
-                self.remove_player(player)
+                self.remove_player(player, event['protocol'])
                 event_manager.add_event({
                     'channel': 'game_command',
                     'player_uid': self.get_player_by_protocol(event['protocol']),

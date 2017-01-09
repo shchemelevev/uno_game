@@ -6,7 +6,7 @@ from datetime import datetime
 from uno.server.event_manager import event_manager
 from uno.game.uno_round import UnoRound
 from uno.server.user import AIUser
-from uno.server.player_events_processor import online_players
+from uno.server.online_players import online_players
 
 from uno.protocol.service import uno_service
 NotificationType = uno_service.NotificationType
