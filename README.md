@@ -1,7 +1,7 @@
-[Задание](task.md)
+[Задание](docs/task.md)
 
-[Правила игры](rules.md)
+[Правила игры](docs/rules.md)
 
-[Архитектура](architecture.md)
+[Архитектура](docs/architecture.md)
 
-[Заметки](notes.md)
+[Заметки](docs/notes.md)
