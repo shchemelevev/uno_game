@@ -2,6 +2,6 @@
 
 [Правила игры](rules.md)
 
-[Архитектура](achitecture.md)
+[Архитектура](architecture.md)
 
 [Заметки](notes.md)
